@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Matrices</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.13.0/dist/tf.min.js"></script>
+</head>
+<body>
+  <h2>Calculadora de Matrices con TensorFlow.js</h2>
+  <div id="resultado"></div>
+
+  <script>
+    function generarMatrizAleatoria(filas, columnas) {
+      return tf.randomUniform([filas, columnas], 1, 21, 'int32');
+    }
+
+    function mostrarMatriz(titulo, tensor) {
+      const contenedor = document.getElementById("resultado");
+      const tituloElem = document.createElement("h3");
+      tituloElem.textContent = titulo;
+      contenedor.appendChild(tituloElem);
+
+      const tabla = document.createElement("table");
+      tabla.style.borderCollapse = "collapse";
+
+      const array = tensor.arraySync(); // Convertir tensor a array normal
+
+      array.forEach(fila => {
+        const filaElem = document.createElement("tr");
+        fila.forEach(valor => {
+          const celda = document.createElement("td");
+          celda.textContent = valor;
+          celda.style.border = "1px solid black";
+          celda.style.padding = "5px";
+          filaElem.appendChild(celda);
+        });
+        tabla.appendChild(filaElem);
+      });
+
+      contenedor.appendChild(tabla);
+    }
+
+    async function main() {
+      const filas1 = parseInt(prompt("Ingrese el número de filas de la primera matriz:"));
+      const columnas1 = parseInt(prompt("Ingrese el número de columnas de la primera matriz:"));
+
+      const filas2 = parseInt(prompt("Ingrese el número de filas de la segunda matriz:"));
+      const columnas2 = parseInt(prompt("Ingrese el número de columnas de la segunda matriz:"));
+
+      const matriz1 = generarMatrizAleatoria(filas1, columnas1);
+      const matriz2 = generarMatrizAleatoria(filas2, columnas2);
+
+      mostrarMatriz("Matriz 1", matriz1);
+      mostrarMatriz("Matriz 2", matriz2);
+
+      // Suma si las dimensiones son iguales
+      if (filas1 === filas2 && columnas1 === columnas2) {
+        const suma = tf.add(matriz1, matriz2);
+        mostrarMatriz("Suma de Matriz 1 + Matriz 2", suma);
+      } else {
+        const avisoSuma = document.createElement("p");
+        avisoSuma.textContent = "No se puede sumar: las matrices no tienen las mismas dimensiones.";
+        document.getElementById("resultado").appendChild(avisoSuma);
+      }
+
+      // Multiplicación si columnas1 === filas2
+      if (columnas1 === filas2) {
+        const producto = tf.matMul(matriz1, matriz2);
+        mostrarMatriz("Multiplicación de Matriz 1 * Matriz 2", producto);
+      } else {
+        const avisoMult = document.createElement("p");
+        avisoMult.textContent = "No se puede multiplicar: columnas de Matriz 1 deben ser iguales a filas de Matriz 2.";
+        document.getElementById("resultado").appendChild(avisoMult);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
